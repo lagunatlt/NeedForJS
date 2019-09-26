@@ -1,4 +1,6 @@
 const score = document.querySelector('.score'),
+	bestScore = document.querySelector('.best-score'),
+	scoreWrap = document.querySelector('.score-wrap'),
 	start = document.querySelector('.start'),
 	gameArea = document.querySelector('.gameArea'),
 	car = document.createElement('div');
@@ -31,7 +33,7 @@ const setting = {
 	score: 0,
 	speed: 5,
 	traffic: 3,
-	level: 0
+	level: 2000
 };
 
 function getQuantityElements(hightElement){
@@ -44,16 +46,16 @@ function startGame(event){
 		return;
 	}
 	if (event.target.classList.contains('easy')) {
-		setting.speed = 3;
-		setting.traffic = 3;
+		setting.speed = 5;
+		setting.traffic = 4;
 
 	}
 	if (event.target.classList.contains('medium')) {
-		setting.speed = 5;
+		setting.speed = 7;
 		setting.traffic = 3;
 	}
 	if (event.target.classList.contains('hard')) {
-		setting.speed = 7;
+		setting.speed = 9;
 		setting.traffic = 2;
 	}
 
@@ -85,6 +87,7 @@ function startGame(event){
 	
 	setting.score = 0;
 	setting.start = true;
+	bestScore.classList.add('hide');
 	gameArea.appendChild(car);
 	car.style.left = gameArea.offsetWidth / 2 - car.offsetWidth / 2;
 	car.style.top = 'auto';
@@ -96,18 +99,12 @@ function startGame(event){
 
 function playGame(){
 
-	if (setting.score > 2000 && setting.level === 0) {
+	if (setting.score > setting.level) {
 		setting.speed++;
-		setting.level++;
-	} else if (setting.score > 5000 && setting.level === 1) {
-		setting.speed++;
-		setting.level++;
-	} else if (setting.score > 10000 && setting.level === 2) {
-		setting.speed++;
-		setting.level++;
+		setting.level += 2000;
 	}
 
-	setting.score += setting.speed;
+	setting.score += Math.ceil(setting.speed*0.2);
 	score.innerHTML = 'SCORE<br>' + setting.score;
 	moveRoad();
 	moveEnemy();
@@ -161,18 +158,21 @@ function moveEnemy(){
 		let carRect = car.getBoundingClientRect();
 		let enemyRect = item.getBoundingClientRect();
 
-		if (carRect.top <= enemyRect.bottom &&
-			carRect.right >= enemyRect.left &&
+		if (carRect.top <= enemyRect.bottom - 3 &&
+			carRect.right - 3 >= enemyRect.left &&
 			carRect.left <= enemyRect.right &&
 			carRect.bottom >= enemyRect.top) {
 			setting.start = false;
+			setting.level = 0;
 			audio.pause();
 			crash.play();
 				if (topScore < setting.score) {
 					localStorage.setItem('topScore', setting.score);
 				}
+			bestScore.innerHTML = 'BEST SCORE<br>' + topScore;
 			start.classList.remove('hide');
-			start.style.top = score.offsetHeight;
+			bestScore.classList.remove('hide');
+			start.style.top = scoreWrap.offsetHeight;
 		}
 		item.y += setting.speed / 2;
 		item.style.top = item.y + 'px';
