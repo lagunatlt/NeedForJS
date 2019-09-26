@@ -23,7 +23,7 @@ const setting = {
 };
 
 function getQuantityElements(hightElement){
-	return document.documentElement.clientHeight / hightElement + 1;
+	return document.documentElement.clientHeight / hightElement;
 }
 
 function startGame(){
