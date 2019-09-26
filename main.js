@@ -2,7 +2,18 @@ const score = document.querySelector('.score'),
 	start = document.querySelector('.start'),
 	gameArea = document.querySelector('.gameArea'),
 	car = document.createElement('div');
+
 car.classList.add('car');
+
+let topScore = localStorage.getItem('topScore');
+
+const audio = new Audio('./audio.mp3');
+const crash = new Audio('./crash.mp3');
+let allow = false;
+audio.addEventListener('loadeddata', function(){
+ allow = true;
+});
+
 
 start.addEventListener('click', startGame);
 document.addEventListener('keydown', startRun);
@@ -19,18 +30,37 @@ const setting = {
 	start: false,
 	score: 0,
 	speed: 5,
-	traffic: 3
+	traffic: 3,
+	level: 0
 };
 
 function getQuantityElements(hightElement){
-	return Math.ceil(gameArea.offsetHeight / hightElement);
+	return Math.ceil(gameArea.offsetHeight / hightElement) +1;
 }
 
-function startGame(){
+function startGame(event){
+
+	if (event.target.classList.contains('start')){
+		return;
+	}
+	if (event.target.classList.contains('easy')) {
+		setting.speed = 3;
+		setting.traffic = 3;
+
+	}
+	if (event.target.classList.contains('medium')) {
+		setting.speed = 5;
+		setting.traffic = 3;
+	}
+	if (event.target.classList.contains('hard')) {
+		setting.speed = 7;
+		setting.traffic = 2;
+	}
+
 	start.classList.add('hide');
 	gameArea.innerHTML = '';
 	
-	for (let i = 0; i < getQuantityElements(100) + 1; i++){
+	for (let i = 0; i < getQuantityElements(100); i++){
 		const line = document.createElement('div');
 		line.classList.add('line');
 		line.style.top = (i * 100) + 'px';
@@ -48,6 +78,11 @@ function startGame(){
 		enemy.style.backgroundImage = `url(./img/car${enemyImg}.png)`;
 		gameArea.appendChild(enemy);
 	}
+
+	if (allow){
+		audio.play();
+	}
+	
 	setting.score = 0;
 	setting.start = true;
 	gameArea.appendChild(car);
@@ -60,26 +95,39 @@ function startGame(){
 }
 
 function playGame(){
-	if(setting.start){
-		setting.score += setting.speed;
-		score.innerHTML = 'SCORE<br>' + setting.score;
-		moveRoad();
-		moveEnemy();
-		if(keys.ArrowLeft && setting.x > 0){
-			setting.x -= setting.speed;
-		}
-		if(keys.ArrowRight && setting.x < (gameArea.offsetWidth - car.offsetWidth)){
-			setting.x += setting.speed;
-		}
-		if (keys.ArrowUp && setting.y > 0) {
-			setting.y -= setting.speed;
-		}
-		if (keys.ArrowDown && setting.y < (gameArea.offsetHeight - car.offsetHeight)){
-			setting.y += setting.speed;
-		}
 
-		car.style.left = setting.x + 'px';
-		car.style.top = setting.y + 'px';
+	if (setting.score > 2000 && setting.level === 0) {
+		setting.speed++;
+		setting.level++;
+	} else if (setting.score > 5000 && setting.level === 1) {
+		setting.speed++;
+		setting.level++;
+	} else if (setting.score > 10000 && setting.level === 2) {
+		setting.speed++;
+		setting.level++;
+	}
+
+	setting.score += setting.speed;
+	score.innerHTML = 'SCORE<br>' + setting.score;
+	moveRoad();
+	moveEnemy();
+	if(keys.ArrowLeft && setting.x > 0) {
+		setting.x -= setting.speed;
+	}
+	if(keys.ArrowRight && setting.x < (gameArea.offsetWidth - car.offsetWidth)){
+		setting.x += setting.speed;
+	}
+	if (keys.ArrowUp && setting.y > 0) {
+		setting.y -= setting.speed;
+	}
+	if (keys.ArrowDown && setting.y < (gameArea.offsetHeight - car.offsetHeight)){
+		setting.y += setting.speed;
+	}
+
+	car.style.left = setting.x + 'px';
+	car.style.top = setting.y + 'px';
+
+	if(setting.start){
 		requestAnimationFrame(playGame);
 	}
 }
@@ -118,14 +166,21 @@ function moveEnemy(){
 			carRect.left <= enemyRect.right &&
 			carRect.bottom >= enemyRect.top) {
 			setting.start = false;
+			audio.pause();
+			crash.play();
+				if (topScore < setting.score) {
+					localStorage.setItem('topScore', setting.score);
+				}
 			start.classList.remove('hide');
 			start.style.top = score.offsetHeight;
 		}
 		item.y += setting.speed / 2;
 		item.style.top = item.y + 'px';
-		if (item.y >= document.documentElement.clientHeight){
+		if (item.y >= gameArea.offsetHeight){
+			let enemyImg = Math.floor(Math.random() * 4) + 1;
 			item.y = -100 * setting.traffic;
 			item.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
+			item.style.backgroundImage = `url(./img/car${enemyImg}.png)`;
 		}
 	});
 

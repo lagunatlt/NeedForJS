@@ -130,7 +130,7 @@ table {
 }
 
 .hide {
-	display: none;
+	display: none !important;
 }
 .car{
 	position: absolute;
@@ -172,6 +172,9 @@ table {
 
 .start {
 	position: absolute;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
 	left: 0;
 	top: 0;
 	width: 100%;
@@ -182,9 +185,14 @@ table {
 	color: #fff;
 	font-size: 1.5rem;
 	background: black;
-	cursor: pointer;
 	font-family: sans-serif;
 	font-weight: 700;
+}
+.start>div {
+	margin: 0 10px;
+	border: 2px dotted whitesmoke;
+	padding: 4px;
+	cursor: pointer;
 }
 
 .score {
