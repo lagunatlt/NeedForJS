@@ -7,7 +7,7 @@ const score = document.querySelector('.score'),
 
 car.classList.add('car');
 
-let topScore = localStorage.getItem('topScore');
+let topScore;
 
 const audio = new Audio('./audio.mp3');
 const crash = new Audio('./crash.mp3');
@@ -41,6 +41,8 @@ function getQuantityElements(hightElement){
 }
 
 function startGame(event){
+
+	
 
 	if (event.target.classList.contains('start')){
 		return;
@@ -103,7 +105,6 @@ function playGame(){
 		setting.speed++;
 		setting.level += 2000;
 	}
-
 	setting.score += Math.ceil(setting.speed*0.2);
 	score.innerHTML = 'SCORE<br>' + setting.score;
 	moveRoad();
@@ -153,7 +154,7 @@ function moveRoad(){
 
 function moveEnemy(){
 	let enemy = document.querySelectorAll('.enemy');
-
+	topScore = localStorage.getItem('topScore');
 	enemy.forEach(function(item){
 		let carRect = car.getBoundingClientRect();
 		let enemyRect = item.getBoundingClientRect();
@@ -166,9 +167,11 @@ function moveEnemy(){
 			setting.level = 0;
 			audio.pause();
 			crash.play();
+			
 				if (topScore < setting.score) {
 					localStorage.setItem('topScore', setting.score);
 				}
+			topScore = localStorage.getItem('topScore');
 			bestScore.innerHTML = 'BEST SCORE<br>' + topScore;
 			start.classList.remove('hide');
 			bestScore.classList.remove('hide');
