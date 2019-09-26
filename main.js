@@ -44,9 +44,8 @@ function startGame(){
 		enemy.y = -100 * setting.traffic * i + 1;
 		enemy.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
 		enemy.style.top = enemy.y + 'px';
-		let backImg = Math.floor(Math.random() * 4 + 1);
-		console.log(backImg);
-		enemy.style.backgroundImage = 'url(./img/car' + backImg + '.png)';
+		let enemyImg = Math.floor(Math.random() * 4 + 1);
+		enemy.style.backgroundImage = `url(./img/car${enemyImg}.png)`;
 		gameArea.appendChild(enemy);
 	}
 	setting.score = 0;
