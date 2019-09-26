@@ -18,19 +18,19 @@ const keys = {
 const setting = {
 	start: false,
 	score: 0,
-	speed: 3,
+	speed: 5,
 	traffic: 3
 };
 
 function getQuantityElements(hightElement){
-	return document.documentElement.clientHeight / hightElement;
+	return Math.ceil(gameArea.offsetHeight / hightElement);
 }
 
 function startGame(){
 	start.classList.add('hide');
 	gameArea.innerHTML = '';
 	
-	for (let i = 0; i < getQuantityElements(100); i++){
+	for (let i = 0; i < getQuantityElements(100) + 1; i++){
 		const line = document.createElement('div');
 		line.classList.add('line');
 		line.style.top = (i * 100) + 'px';
@@ -41,10 +41,10 @@ function startGame(){
 	for (let i = 0; i < getQuantityElements(100 * setting.traffic); i++){
 		const enemy = document.createElement('div');
 		enemy.classList.add('enemy');
+		let enemyImg = Math.floor(Math.random() * 4 ) + 1;
 		enemy.y = -100 * setting.traffic * i + 1;
 		enemy.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
 		enemy.style.top = enemy.y + 'px';
-		let enemyImg = Math.floor(Math.random() * 4 + 1);
 		enemy.style.backgroundImage = `url(./img/car${enemyImg}.png)`;
 		gameArea.appendChild(enemy);
 	}
@@ -60,7 +60,6 @@ function startGame(){
 }
 
 function playGame(){
-	// console.log('Play game!');
 	if(setting.start){
 		setting.score += setting.speed;
 		score.innerHTML = 'SCORE<br>' + setting.score;
@@ -119,7 +118,6 @@ function moveEnemy(){
 			carRect.left <= enemyRect.right &&
 			carRect.bottom >= enemyRect.top) {
 			setting.start = false;
-			console.warn('ДТП');
 			start.classList.remove('hide');
 			start.style.top = score.offsetHeight;
 		}
